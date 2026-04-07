@@ -1,0 +1,143 @@
+#!/usr/bin/env bash
+# gct — Google Cloud Tools
+# A unified CLI for inspecting and managing GCP resources across projects.
+#
+# Run `gct` with no arguments to see this help.
+
+set -euo pipefail
+
+GCT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$GCT_DIR/lib/colors.sh"
+source "$GCT_DIR/lib/common.sh"
+
+VERSION="1.0.0"
+
+# ── Help ──────────────────────────────────────────────────────────────────────
+
+print_help() {
+  echo -e "${BOLD}${CYAN}"
+  cat <<'BANNER'
+  ██████╗  ██████╗████████╗
+ ██╔════╝ ██╔════╝╚══██╔══╝
+ ██║  ███╗██║        ██║
+ ██║   ██║██║        ██║
+ ╚██████╔╝╚██████╗   ██║
+  ╚═════╝  ╚═════╝   ╚═╝   Google Cloud Tools
+BANNER
+  echo -e "${RESET}"
+
+  echo -e "${BOLD}USAGE${RESET}"
+  echo -e "  gct <command> [args...]"
+  echo ""
+  echo -e "${BOLD}COMMANDS${RESET}"
+  echo ""
+
+  printf "  ${BOLD}${GREEN}%-18s${RESET} %s\n" "inspect" "Full resource survey — Cloud Run, SQL, buckets, secrets, and more"
+  printf "  ${DIM}%-18s %s${RESET}\n"      ""         "gct inspect                      # scan all projects"
+  printf "  ${DIM}%-18s %s${RESET}\n"      ""         "gct inspect my-project-id        # scan one project"
+  echo ""
+
+  printf "  ${BOLD}${GREEN}%-18s${RESET} %s\n" "projects" "List all accessible GCP projects with status"
+  printf "  ${DIM}%-18s %s${RESET}\n"      ""         "gct projects"
+  echo ""
+
+  printf "  ${BOLD}${GREEN}%-18s${RESET} %s\n" "use PROJECT_ID" "Switch the active (default) project"
+  printf "  ${DIM}%-18s %s${RESET}\n"      ""         "gct use my-project-id"
+  echo ""
+
+  printf "  ${BOLD}${GREEN}%-18s${RESET} %s\n" "pick" "Fuzzy-search project picker — select interactively (requires fzf)"
+  printf "  ${DIM}%-18s %s${RESET}\n"      ""         "gct pick"
+  echo ""
+
+  printf "  ${BOLD}${GREEN}%-18s${RESET} %s\n" "ctx" "Show active account, project, region, and credentialed accounts"
+  printf "  ${DIM}%-18s %s${RESET}\n"      ""         "gct ctx                          # summary"
+  printf "  ${DIM}%-18s %s${RESET}\n"      ""         "gct ctx --full                   # full gcloud config dump"
+  echo ""
+
+  printf "  ${BOLD}${GREEN}%-18s${RESET} %s\n" "services" "List enabled APIs for one or all projects"
+  printf "  ${DIM}%-18s %s${RESET}\n"      ""         "gct services                     # active project"
+  printf "  ${DIM}%-18s %s${RESET}\n"      ""         "gct services --all               # across all projects"
+  printf "  ${DIM}%-18s %s${RESET}\n"      ""         "gct services --filter run        # filter by keyword"
+  echo ""
+
+  printf "  ${BOLD}${GREEN}%-18s${RESET} %s\n" "logs SERVICE" "Tail Cloud Run logs for a service"
+  printf "  ${DIM}%-18s %s${RESET}\n"      ""         "gct logs my-api                  # last 100 lines"
+  printf "  ${DIM}%-18s %s${RESET}\n"      ""         "gct logs my-api --severity ERROR # errors only"
+  printf "  ${DIM}%-18s %s${RESET}\n"      ""         "gct logs my-api --follow         # live polling (10s)"
+  printf "  ${DIM}%-18s %s${RESET}\n"      ""         "gct logs my-api --limit 500      # more history"
+  echo ""
+
+  printf "  ${BOLD}${GREEN}%-18s${RESET} %s\n" "help" "Show this help message"
+  printf "  ${BOLD}${GREEN}%-18s${RESET} %s\n" "version" "Print version"
+  echo ""
+
+  echo -e "${DIM}  Run any command without arguments for its own help + examples.${RESET}"
+  echo ""
+}
+
+print_version() {
+  echo "gct version $VERSION"
+}
+
+# ── Dispatcher ────────────────────────────────────────────────────────────────
+
+cmd="${1:-}"
+
+case "$cmd" in
+  ""|help|--help|-h)
+    print_help
+    ;;
+
+  version|--version|-v)
+    print_version
+    ;;
+
+  inspect)
+    shift
+    bash "$GCT_DIR/commands/inspect.sh" "$@"
+    ;;
+
+  projects|ls)
+    shift
+    source "$GCT_DIR/commands/projects.sh"
+    cmd_projects "$@"
+    ;;
+
+  use)
+    shift
+    if [[ -z "${1:-}" ]]; then
+      error "Usage: gct use PROJECT_ID"
+      exit 1
+    fi
+    source "$GCT_DIR/commands/projects.sh"
+    cmd_use "$@"
+    ;;
+
+  pick)
+    shift
+    source "$GCT_DIR/commands/projects.sh"
+    cmd_pick "$@"
+    ;;
+
+  ctx|context|config)
+    shift
+    bash "$GCT_DIR/commands/ctx.sh" "$@"
+    ;;
+
+  services|apis)
+    shift
+    bash "$GCT_DIR/commands/services.sh" "$@"
+    ;;
+
+  logs|log)
+    shift
+    bash "$GCT_DIR/commands/logs.sh" "$@"
+    ;;
+
+  *)
+    error "Unknown command: $cmd"
+    echo ""
+    print_help
+    exit 1
+    ;;
+esac
