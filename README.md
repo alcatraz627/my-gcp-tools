@@ -46,7 +46,7 @@ Requires: `gcloud` SDK installed and authenticated (`gcloud auth login`).
 
 ```bash
 # Clone
-git clone https://github.com/YOUR_USERNAME/my-gcp-tools.git
+git clone https://github.com/alcatraz627/my-gcp-tools.git
 cd my-gcp-tools
 
 # Install (symlinks gct into /usr/local/bin)
