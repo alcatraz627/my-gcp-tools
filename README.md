@@ -1,23 +1,8 @@
-<div align="center">
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="128" height="128">
-    <!-- Terminal >_ motif on GCP blue -->
-    <rect x="0"  y="0"  width="64" height="64" fill="#1a73e8"/>
-    <!-- Screen bezel -->
-    <rect x="4"  y="6"  width="56" height="44" rx="2" fill="#0d47a1"/>
-    <rect x="6"  y="8"  width="52" height="40" fill="#0a0f1e"/>
-    <!-- Prompt chevron > -->
-    <rect x="10" y="18" width="6"  height="4"  fill="#34a853"/>
-    <rect x="14" y="22" width="6"  height="4"  fill="#34a853"/>
-    <rect x="10" y="26" width="6"  height="4"  fill="#34a853"/>
-    <!-- Cursor _ -->
-    <rect x="24" y="28" width="8"  height="3"  fill="#34a853"/>
-    <!-- Bottom stand -->
-    <rect x="24" y="52" width="16" height="4"  fill="#0d47a1"/>
-    <rect x="16" y="56" width="32" height="4"  rx="2" fill="#0d47a1"/>
-  </svg>
-</div>
+<p align="center">
+  <img src=".github/readme/banner.svg" alt="my-gcp-tools banner: Wordmark and subcommands" width="100%">
+</p>
 
-<h1 align="center">gct — Google Cloud Tools</h1>
+<h1 align="center"><img src=".github/readme/favicon.svg" alt="" width="32" height="32"> gct — Google Cloud Tools</h1>
 
 <p align="center">
   A unified CLI for inspecting and managing GCP resources across all your projects.
@@ -31,6 +16,13 @@
 </p>
 
 ---
+
+<details>
+<summary>Riddle answer</summary>
+
+gct inspect: it surveys Cloud Run, Cloud SQL, Secret Manager, Pub/Sub and more across all accessible GCP projects in one pass.
+
+</details>
 
 ## About
 
